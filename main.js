@@ -62,13 +62,21 @@ function removeTodo() {
 
 // SIMULTANEOUS DATA
 function getData() {
-  console.log('Simultaneous Request');
+  axios
+    .all([
+      axios.get('http://jsonplaceholder.typicode.com/todos'),
+      axios.get('http://jsonplaceholder.typicode.com/posts')
+    ])
+    .then(
+      axios.spread((todos, posts) => {
+        showOutput(todos);
+      })
+    )
+    .catch(err => console.error(err));
 }
 
 // CUSTOM HEADERS
-function customHeaders() {
-  console.log('Custom Headers');
-}
+function customHeaders() {}
 
 // TRANSFORMING REQUESTS & RESPONSES
 function transformResponse() {
@@ -88,6 +96,22 @@ function cancelToken() {
 // INTERCEPTING REQUESTS & RESPONSES
 
 // AXIOS INSTANCES
+
+//AXIOS INTERCEPTER
+axios.interceptors.request.use(
+  config => {
+    console.log(
+      `${config.method.toUpperCase()} sent to ${
+        config.url
+      } at ${new Date().getTime()}`
+    );
+
+    return config;
+  },
+  error => {
+    return Promise.reject(error);
+  }
+);
 
 // Show output in browser
 function showOutput(res) {
